@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>Revisión Litúrgica</title>
 
+  <!-- version: 2026-01-18-4 -->
+
   <style>
     /* ============================
        ESTILO PREMIUM PARA TABLAS
@@ -178,12 +180,26 @@
     .boton-rojo { background: #e53935; color: white; }
 
     /* ============================
-       COLORES DE FILA
+       COLORES DE FILA (CORREGIDO)
        ============================ */
 
-    .fila-verde { background: #e8f5e9 !important; }
-    .fila-amarillo { background: #fff8e1 !important; }
-    .fila-rojo { background: #ffebee !important; }
+    .fila-verde {
+      background: #e8f5e9 !important;
+    }
+
+    .fila-amarillo {
+      background: #fff8e1 !important;
+    }
+
+    .fila-rojo {
+      background: #ffebee !important;
+    }
+
+    tr.fila-verde:hover,
+    tr.fila-amarillo:hover,
+    tr.fila-rojo:hover {
+      background: inherit !important;
+    }
 
     /* ============================
        LOGIN Y PANELES
