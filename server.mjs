@@ -3,10 +3,18 @@ import fs from "fs";
 import cors from "cors";
 import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+// Servir frontend
+app.use(express.static(path.join(__dirname, "public")));
 
 const DATA_DIR = "./data";
 const SECRET = "clave_super_secreta";
@@ -89,7 +97,7 @@ function cargarDiasLiturgicos(fecha) {
 function cargarDiasContenido(fecha) {
   const year = fecha.substring(0, 4);
   const ruta = `${DATA_DIR}/dias_contenido_${year}.json`;
-  if (!fs.existsSync(ruta)) {
+  if (!fs.existsExists(ruta)) {
     throw new Error(`No existe archivo de contenido para el año ${year}`);
   }
   return JSON.parse(fs.readFileSync(ruta, "utf8"));
@@ -141,172 +149,4 @@ app.get("/api/supervisor/:year/informe", auth, soloSupervisor, (req, res) => {
 
   try {
     const diasLiturgicos = JSON.parse(
-      fs.readFileSync(`${DATA_DIR}/dias_liturgicos_${year}.json`, "utf8")
-    );
-    const diasContenido = JSON.parse(
-      fs.readFileSync(`${DATA_DIR}/dias_contenido_${year}.json`, "utf8")
-    );
-
-    const informe = {
-      totales: { verde: 0, amarillo: 0, rojo: 0, pendiente: 0 },
-      dias: [],
-      diasConFallos: [],
-      diasCompletos: []
-    };
-
-    for (const fecha in diasLiturgicos) {
-      const id = diasLiturgicos[fecha];
-      const clave = id + fecha;
-      const registro = diasContenido[clave];
-      if (!registro) continue;
-
-      let verde = 0, amarillo = 0, rojo = 0, pendiente = 0;
-
-      for (const hora in registro.horas) {
-        registro.horas[hora].forEach(e => {
-          if (!e.estado) pendiente++;
-          else if (e.estado === "verde") verde++;
-          else if (e.estado === "amarillo") amarillo++;
-          else if (e.estado === "rojo") rojo++;
-        });
-      }
-
-      informe.totales.verde += verde;
-      informe.totales.amarillo += amarillo;
-      informe.totales.rojo += rojo;
-      informe.totales.pendiente += pendiente;
-
-      const dia = { fecha, idLiturgico: id, verde, amarillo, rojo, pendiente };
-      informe.dias.push(dia);
-
-      if (rojo > 0 || amarillo > 0) informe.diasConFallos.push(dia);
-      if (pendiente === 0 && rojo === 0 && amarillo === 0) informe.diasCompletos.push(dia);
-    }
-
-    res.json(informe);
-
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Error generando informe" });
-  }
-});
-
-/* ===================== AUDITORÍA ===================== */
-
-app.get("/api/auditoria", auth, soloSupervisor, (req, res) => {
-  const ruta = "./data/auditoria.json";
-  if (!fs.existsSync(ruta)) {
-    return res.json([]);
-  }
-  const log = JSON.parse(fs.readFileSync(ruta, "utf8"));
-  res.json(log);
-});
-
-/* ===================== ENDPOINTS PRINCIPALES ===================== */
-
-app.get("/api/dia/:fecha", auth, (req, res) => {
-  const fecha = req.params.fecha;
-
-  try {
-    const diasLiturgicos = cargarDiasLiturgicos(fecha);
-    const diasContenido = cargarDiasContenido(fecha);
-
-    const id = diasLiturgicos[fecha];
-    if (!id) {
-      return res.status(404).json({ error: "Fecha no encontrada en el calendario litúrgico" });
-    }
-
-    const clave = id + fecha;
-    const registro = diasContenido[clave];
-
-    if (!registro) {
-      return res.status(404).json({ error: "No se encontraron datos para esta fecha." });
-    }
-
-    const respuesta = {
-      idLiturgico: id,
-      ...registro.horas
-    };
-
-    res.json(respuesta);
-
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Error cargando datos" });
-  }
-});
-
-app.post("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, (req, res) => {
-  const { fecha, hora, index } = req.params;
-  const { estado } = req.body;
-
-  try {
-    const diasLiturgicos = cargarDiasLiturgicos(fecha);
-    const diasContenido = cargarDiasContenido(fecha);
-
-    const id = diasLiturgicos[fecha];
-    const clave = id + fecha;
-
-    const antes = diasContenido[clave].horas[hora][index].estado || null;
-    diasContenido[clave].horas[hora][index].estado = estado;
-
-    guardarDiasContenido(fecha, diasContenido);
-
-    registrarAuditoria(
-      "cambiar_estado",
-      req.usuario.usuario,
-      fecha,
-      hora,
-      index,
-      antes,
-      estado
-    );
-
-    res.json({ ok: true });
-
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Error guardando estado" });
-  }
-});
-
-app.post("/api/dia/:fecha/hora/:hora/index/:index/observaciones", auth, (req, res) => {
-  const { fecha, hora, index } = req.params;
-  const { observaciones } = req.body;
-
-  try {
-    const diasLiturgicos = cargarDiasLiturgicos(fecha);
-    const diasContenido = cargarDiasContenido(fecha);
-
-    const id = diasLiturgicos[fecha];
-    const clave = id + fecha;
-
-    const antes = diasContenido[clave].horas[hora][index].observaciones || null;
-    diasContenido[clave].horas[hora][index].observaciones = observaciones;
-
-    guardarDiasContenido(fecha, diasContenido);
-
-    registrarAuditoria(
-      "guardar_observaciones",
-      req.usuario.usuario,
-      fecha,
-      hora,
-      index,
-      antes,
-      observaciones
-    );
-
-    res.json({ ok: true });
-
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Error guardando observaciones" });
-  }
-});
-
-/* ===================== SERVIDOR ===================== */
-
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`✔ Backend en http://localhost:${PORT}`);
-});
+      fs.readFileSync(`${
