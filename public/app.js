@@ -37,7 +37,7 @@ async function login() {
   const res = await fetch(`${API}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ usuario, password })
+    body: JSON.stringify({ usuario, password, rol })
   });
 
   const datos = await res.json();
@@ -385,38 +385,60 @@ async function toggleAuditoria() {
 }
 
 async function cargarAuditoria() {
-  const tablaDiv = document.getElementById("tablaAuditoria");
-  tablaDiv.innerHTML = "Cargando auditoría...";
-
   try {
     const res = await fetch(`${API}/auditoria`, {
       headers: {
         "Authorization": "Bearer " + localStorage.getItem("token")
       }
     });
-    const log = await res.json();
 
-    let html = "<table><tr><th>Fecha/Hora</th><th>Usuario</th><th>Acción</th><th>Fecha</th><th>Hora</th><th>Index</th><th>Antes</th><th>Después</th></tr>";
-    log.forEach(r => {
-      html += `<tr>
-        <td>${r.timestamp}</td>
-        <td>${r.usuario}</td>
-        <td>${r.accion}</td>
-        <td>${r.fecha}</td>
-        <td>${r.hora}</td>
-        <td>${r.index}</td>
-        <td>${r.antes === null ? "" : r.antes}</td>
-        <td>${r.despues === null ? "" : r.despues}</td>
-      </tr>`;
-    });
-    html += "</table>";
-    tablaDiv.innerHTML = html;
+    const datos = await res.json();
+
+    if (!Array.isArray(datos)) {
+      alert("Error cargando auditoría.");
+      return;
+    }
+
+    let html = `
+      <table class="tabla-auditoria">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Usuario ID</th>
+            <th>Campo</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Índice</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    for (const r of datos) {
+      html += `
+        <tr>
+          <td>${r.timestamp || ""}</td>
+          <td>${r.usuario_id || ""}</td>
+          <td>${r.campo || ""}</td>
+          <td>${r.fecha || ""}</td>
+          <td>${r.hora || ""}</td>
+          <td>${r.indice ?? ""}</td>
+          <td>${r.valor ?? ""}</td>
+        </tr>
+      `;
+    }
+
+    html += `</tbody></table>`;
+
+    document.getElementById("contenedorAuditoria").innerHTML = html;
 
   } catch (e) {
-    tablaDiv.innerHTML = "Error cargando auditoría.";
     console.error(e);
+    alert("Error cargando auditoría.");
   }
 }
+
 
 /* ===================== INICIO ===================== */
 
