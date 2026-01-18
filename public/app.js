@@ -1,5 +1,32 @@
 const API = window.location.origin + "/api";
 
+/* ===================== ETIQUETAS DE ELEMENTOS ===================== */
+
+const etiquetas = {
+  antifona_invitatorio: "Ant. Invitatorio",
+  himno: "Himno",
+
+  antifona_salmo_1: "Ant. 1 Salmo",
+  salmo_1: "1 Salmo",
+  antifona_salmo_2: "Ant. 2 Salmo",
+  salmo_2: "2 Salmo",
+  antifona_salmo_3: "Ant. 3 Salmo",
+  salmo_3: "3 Salmo",
+
+  versiculo: "Versículo",
+
+  lectura_1: "1 Lectura Anual",
+  responsorio_1: "1 Responsorio Anual",
+  lectura_1_bienal: "1 Lectura Bienal",
+  responsorio_1_bienal: "1 Responsorio Bienal",
+
+  lectura_2: "2 Lectura Anual",
+  responsorio_2: "2 Responsorio Anual",
+  lectura_2_bienal: "2 Lectura Bienal",
+  responsorio_2_bienal: "2 Responsorio Bienal",
+
+  oracion: "Oración"
+};
 
 /* ===================== LOGIN ===================== */
 
@@ -161,7 +188,7 @@ function renderDia(data, fecha) {
 
       html += `
         <tr class="${estado ? 'fila-' + estado : ''}">
-          <td>${elem.tipo}</td>
+          <td>${etiquetas[elem.tipo] || elem.tipo}</td>
           <td>${estado}</td>
           <td>
             <textarea id="obs-${hora}-${index}" rows="2">${obs}</textarea>
