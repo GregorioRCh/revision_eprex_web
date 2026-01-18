@@ -37,8 +37,9 @@ app.post("/api/login", async (req, res) => {
   const { data: user, error } = await supabase
     .from("usuarios")
     .select("*")
-    .eq("nombre", usuario)
-    .eq("password_hash", password)
+   .eq("usuario", usuario)
+
+    .eq("password", password)
     .single();
 
   console.log("SUPABASE RESULT:", user, error);
@@ -63,17 +64,19 @@ app.post("/api/login", async (req, res) => {
 
 /* ---------- CREAR USUARIO ---------- */
 app.post("/api/usuarios", auth, async (req, res) => {
-  const { nombre, email, password, rol } = req.body;
+  const { usuario, password, rol } = req.body;
+
 
   try {
     const { data, error } = await supabase
       .from("usuarios")
-      .insert([{
-        nombre,
-        email,
-        password_hash: password,
-        rol
-      }])
+     .insert([{
+  usuario,
+  password: password
+,
+  rol
+}])
+
       .select()
       .single();
 
