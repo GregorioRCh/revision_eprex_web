@@ -148,9 +148,53 @@ app.get("/api/supervisor/:year/informe", auth, soloSupervisor, (req, res) => {
   const year = req.params.year;
 
   try {
- const diasLiturgicos = JSON.parse(
-  fs.readFileSync(`${DATA_DIR}/dias_liturgicos_${year}.json`, "utf8")
-);
-const diasContenido = JSON.parse(
-  fs.readFileSync(`${DATA_DIR}/dias_contenido_${year}.json`, "utf8")
-);
+    const diasLiturgicos = JSON.parse(
+      fs.readFileSync(`${DATA_DIR}/dias_liturgicos_${year}.json`, "utf8")
+    );
+    const diasContenido = JSON.parse(
+      fs.readFileSync(`${DATA_DIR}/dias_contenido_${year}.json`, "utf8")
+    );
+
+    const informe = {
+      totales: { verde: 0, amarillo: 0, rojo: 0, pendiente: 0 },
+      dias: [],
+      diasConFallos: [],
+      diasCompletos: []
+    };
+
+    for (const fecha in diasLiturgicos) {
+      const id = diasLiturgicos[fecha];
+      const clave = id + fecha;
+      const registro = diasContenido[clave];
+      if (!registro) continue;
+
+      let verde = 0, amarillo = 0, rojo = 0, pendiente = 0;
+
+      for (const hora in registro.horas) {
+        registro.horas[hora].forEach(e => {
+          if (!e.estado) pendiente++;
+          else if (e.estado === "verde") verde++;
+          else if (e.estado === "amarillo") amarillo++;
+          else if (e.estado === "rojo") rojo++;
+        });
+      }
+
+      informe.totales.verde += verde;
+      informe.totales.amarillo += amarillo;
+      informe.totales.rojo += rojo;
+      informe.totales.pendiente += pendiente;
+
+      const dia = { fecha, idLiturgico: id, verde, amarillo, rojo, pendiente };
+      informe.dias.push(dia);
+
+      if (rojo > 0 || amarillo > 0) informe.diasConFallos.push(dia);
+      if (pendiente === 0 && rojo === 0 && amarillo === 0) informe.diasCompletos.push(dia);
+    }
+
+    res.json(informe);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error generando informe" });
+  }
+});
