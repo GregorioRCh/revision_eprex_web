@@ -97,7 +97,7 @@ function cargarDiasLiturgicos(fecha) {
 function cargarDiasContenido(fecha) {
   const year = fecha.substring(0, 4);
   const ruta = `${DATA_DIR}/dias_contenido_${year}.json`;
-  if (!fs.existsExists(ruta)) {
+  if (!fs.existsSync(ruta)) {
     throw new Error(`No existe archivo de contenido para el año ${year}`);
   }
   return JSON.parse(fs.readFileSync(ruta, "utf8"));
@@ -197,4 +197,130 @@ app.get("/api/supervisor/:year/informe", auth, soloSupervisor, (req, res) => {
     console.error(e);
     res.status(500).json({ error: "Error generando informe" });
   }
+});
+
+/* ===================== AUDITORÍA ===================== */
+
+app.get("/api/auditoria", auth, soloSupervisor, (req, res) => {
+  const ruta = "./data/auditoria.json";
+  if (!fs.existsSync(ruta)) {
+    return res.json([]);
+  }
+  const log = JSON.parse(fs.readFileSync(ruta, "utf8"));
+  res.json(log);
+});
+
+/* ===================== ENDPOINTS PRINCIPALES ===================== */
+
+app.get("/api/dia/:fecha", auth, (req, res) => {
+  const fecha = req.params.fecha;
+
+  try {
+    const diasLiturgicos = cargarDiasLiturgicos(fecha);
+    const diasContenido = cargarDiasContenido(fecha);
+
+    const id = diasLiturgicos[fecha];
+    if (!id) {
+      return res.status(404).json({ error: "Fecha no encontrada en el calendario litúrgico" });
+    }
+
+    const clave = id + fecha;
+    const registro = diasContenido[clave];
+
+    if (!registro) {
+      return res.status(404).json({ error: "No se encontraron datos para esta fecha." });
+    }
+
+    const respuesta = {
+      idLiturgico: id,
+      ...registro.horas
+    };
+
+    res.json(respuesta);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error cargando datos" });
+  }
+});
+
+app.post("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, (req, res) => {
+  const { fecha, hora, index } = req.params;
+  const { estado } = req.body;
+
+  try {
+    const diasLiturgicos = cargarDiasLiturgicos(fecha);
+    const diasContenido = cargarDiasContenido(fecha);
+
+    const id = diasLiturgicos[fecha];
+    const clave = id + fecha;
+
+    const antes = diasContenido[clave].horas[hora][index].estado || null;
+    diasContenido[clave].horas[hora][index].estado = estado;
+
+    guardarDiasContenido(fecha, diasContenido);
+
+    registrarAuditoria(
+      "cambiar_estado",
+      req.usuario.usuario,
+      fecha,
+      hora,
+      index,
+      antes,
+      estado
+    );
+
+    res.json({ ok: true });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error guardando estado" });
+  }
+});
+
+app.post("/api/dia/:fecha/hora/:hora/index/:index/observaciones", auth, (req, res) => {
+  const { fecha, hora, index } = req.params;
+  const { observaciones } = req.body;
+
+  try {
+    const diasLiturgicos = cargarDiasLiturgicos(fecha);
+    const diasContenido = cargarDiasContenido(fecha);
+
+    const id = diasLiturgicos[fecha];
+    const clave = id + fecha;
+
+    const antes = diasContenido[clave].horas[hora][index].observaciones || null;
+    diasContenido[clave].horas[hora][index].observaciones = observaciones;
+
+    guardarDiasContenido(fecha, diasContenido);
+
+    registrarAuditoria(
+      "guardar_observaciones",
+      req.usuario.usuario,
+      fecha,
+      hora,
+      index,
+      antes,
+      observaciones
+    );
+
+    res.json({ ok: true });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error guardando observaciones" });
+  }
+});
+
+/* ===================== FRONTEND (Render necesita esto) ===================== */
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+/* ===================== SERVIDOR ===================== */
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✔ Backend en http://localhost:${PORT}`);
 });
