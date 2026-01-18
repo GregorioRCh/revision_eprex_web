@@ -48,11 +48,12 @@ app.post("/api/login", async (req, res) => {
     return res.status(401).json({ error: "Credenciales incorrectas" });
   }
 
-  const token = jwt.sign(
-    { id: user.id, usuario: user.nombre, rol: user.rol },
-    JWT_SECRET,
-    { expiresIn: "12h" }
-  );
+ const token = jwt.sign(
+  { id: user.id, usuario: user.usuario, rol: user.rol },
+  JWT_SECRET,
+  { expiresIn: "12h" }
+);
+
 
   res.json({
     ok: true,
@@ -260,6 +261,24 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/observaciones", auth, async (re
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Error actualizando observaciones" });
+  }
+});
+/* ---------- AUDITORÍA ---------- */
+// GET /api/auditoria
+app.get("/api/auditoria", auth, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("auditoria")
+      .select("*")
+      .order("timestamp", { ascending: false });
+
+    if (error) throw error;
+
+    res.json(data);
+
+  } catch (e) {
+    console.error("ERROR AUDITORIA:", e);
+    res.status(500).json({ error: "Error cargando auditoría" });
   }
 });
 
