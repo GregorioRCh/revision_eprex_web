@@ -191,7 +191,8 @@ function renderDia(data, fecha) {
           <td>${etiquetas[elem.tipo] || elem.tipo}</td>
           <td>${estado}</td>
           <td>
-            <textarea id="obs-${hora}-${index}" rows="2">${obs}</textarea>
+            <textarea id="obs-${hora}-${index}" rows="2" form="none">${obs}</textarea>
+
           </td>
           <td class="botones-estado">
             <button class="boton-verde" onclick="cambiarEstado('${fecha}', '${hora}', ${index}, 'verde')">Verde</button>
