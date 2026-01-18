@@ -148,5 +148,9 @@ app.get("/api/supervisor/:year/informe", auth, soloSupervisor, (req, res) => {
   const year = req.params.year;
 
   try {
-    const diasLiturgicos = JSON.parse(
-      fs.readFileSync(`${
+ const diasLiturgicos = JSON.parse(
+  fs.readFileSync(`${DATA_DIR}/dias_liturgicos_${year}.json`, "utf8")
+);
+const diasContenido = JSON.parse(
+  fs.readFileSync(`${DATA_DIR}/dias_contenido_${year}.json`, "utf8")
+);
