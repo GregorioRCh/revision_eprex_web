@@ -1,0 +1,10 @@
+{
+  "Admin": {
+    "password": "AdminEprex",
+    "rol": "supervisor"
+  },
+  "HermanoPablo": {
+    "password": "",
+    "rol": "usuario"
+  }
+}

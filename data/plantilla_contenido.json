@@ -1,0 +1,104 @@
+{
+  "PLANTILLA": {
+    "horas": {
+      "oficio_de_lecturas": [
+        { "tipo": "antifona_invitatorio" },
+        { "tipo": "himno" },
+        { "tipo": "antifona_salmo_1" },
+        { "tipo": "salmo_1" },
+        { "tipo": "antifona_salmo_2" },
+        { "tipo": "salmo_2" },
+        { "tipo": "antifona_salmo_3" },
+        { "tipo": "salmo_3" },
+        { "tipo": "versiculo" },
+        { "tipo": "lectura_1" },
+        { "tipo": "responsorio_1" },
+        { "tipo": "lectura_2" },
+        { "tipo": "responsorio_2" },
+        { "tipo": "oracion" }
+      ],
+      "laudes": [
+        { "tipo": "antifona_invitatorio" },
+        { "tipo": "himno" },
+        { "tipo": "antifona_salmo_1" },
+        { "tipo": "salmo_1" },
+        { "tipo": "antifona_salmo_2" },
+        { "tipo": "salmo_2" },
+        { "tipo": "antifona_cantico" },
+        { "tipo": "cantico" },
+        { "tipo": "lectura_breve" },
+        { "tipo": "responsorio_breve" },
+        { "tipo": "antifona_benedictus" },
+        { "tipo": "benedictus" },
+        { "tipo": "preces" },
+        { "tipo": "oracion" }
+      ],
+      "tercia": [
+        { "tipo": "himno" },
+        { "tipo": "antifona" },
+        { "tipo": "salmo_1" },
+        { "tipo": "salmo_2" },
+        { "tipo": "salmo_3" },
+        { "tipo": "lectura_breve" },
+        { "tipo": "versiculo" },
+        { "tipo": "oracion" }
+      ],
+      "sexta": [
+        { "tipo": "himno" },
+        { "tipo": "antifona" },
+        { "tipo": "salmo_1" },
+        { "tipo": "salmo_2" },
+        { "tipo": "salmo_3" },
+        { "tipo": "lectura_breve" },
+        { "tipo": "versiculo" },
+        { "tipo": "oracion" }
+      ],
+      "nona": [
+        { "tipo": "himno" },
+        { "tipo": "antifona" },
+        { "tipo": "salmo_1" },
+        { "tipo": "salmo_2" },
+        { "tipo": "salmo_3" },
+        { "tipo": "lectura_breve" },
+        { "tipo": "versiculo" },
+        { "tipo": "oracion" }
+      ],
+      "visperas": [
+        { "tipo": "himno" },
+        { "tipo": "antifona_salmo_1" },
+        { "tipo": "salmo_1" },
+        { "tipo": "antifona_salmo_2" },
+        { "tipo": "salmo_2" },
+        { "tipo": "antifona_magnificat" },
+        { "tipo": "magnificat" },
+        { "tipo": "lectura_breve" },
+        { "tipo": "responsorio_breve" },
+        { "tipo": "preces" },
+        { "tipo": "oracion" }
+      ],
+      "completas": [
+        { "tipo": "examen" },
+        { "tipo": "himno" },
+        { "tipo": "antifona_salmo" },
+        { "tipo": "salmo_1" },
+        { "tipo": "salmo_2" },
+        { "tipo": "lectura_breve" },
+        { "tipo": "responsorio_breve" },
+        { "tipo": "antifona_nunc_dimittis" },
+        { "tipo": "nunc_dimittis" },
+        { "tipo": "oracion" },
+        { "tipo": "antifona_final_virgen" }
+      ],
+      "misa": [
+        { "tipo": "primera_lectura" },
+        { "tipo": "primera_lectura_alternativa" },
+        { "tipo": "salmo_responsorial" },
+        { "tipo": "segunda_lectura" },
+        { "tipo": "segunda_lectura_alternativa" },
+        { "tipo": "versiculo" },
+        { "tipo": "evangelio" },
+        { "tipo": "evangelio_alternativo" }
+      ]
+    }
+  }
+}
