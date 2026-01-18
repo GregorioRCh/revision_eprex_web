@@ -33,29 +33,28 @@ function auth(req, res, next) {
 app.post("/api/login", async (req, res) => {
   const { usuario, password } = req.body;
 
-  try {
-    const { data: user, error } = await supabase
-      .from("usuarios")
-      .select("*")
-      .eq("usuario", usuario)
-      .eq("password", password) // si luego quieres, aquí metes hash
-      .single();
+  const { data: user, error } = await supabase
+    .from("usuarios")
+    .select("*")
+    .eq("usuario", usuario)
+    .eq("password", password)
+    .single();
 
-    if (error || !user) {
-      return res.status(401).json({ error: "Credenciales incorrectas" });
-    }
-
-    const token = jwt.sign(
-      { id: user.id, usuario: user.usuario, rol: user.rol },
-      JWT_SECRET,
-      { expiresIn: "12h" }
-    );
-
-    res.json({ token });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Error en login" });
+  if (error || !user) {
+    return res.status(401).json({ error: "Credenciales incorrectas" });
   }
+
+  const token = jwt.sign(
+    { id: user.id, usuario: user.usuario, rol: user.rol },
+    JWT_SECRET,
+    { expiresIn: "12h" }
+  );
+
+  res.json({
+    ok: true,
+    token,
+    rol: user.rol
+  });
 });
 
 /* ---------- CREAR USUARIO ---------- */
