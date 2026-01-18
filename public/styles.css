@@ -123,20 +123,19 @@ textarea {
 /* ============================
    COLORES DE FILA SEGÚN ESTADO
    ============================ */
-
 .fila-verde {
-  background: #c8e6c9 !important; /* verde suave pero visible */
-  color: #1b5e20; /* texto verde oscuro para contraste */
+  background: rgba(76, 175, 80, 0.35) !important;
+  color: #1b5e20;
 }
 
 .fila-amarillo {
-  background: #ffecb3 !important; /* amarillo suave pero no pálido */
-  color: #5d4037; /* marrón oscuro para contraste */
+  background: rgba(255, 202, 40, 0.45) !important;
+  color: #5d4037;
 }
 
 .fila-rojo {
-  background: #ffcdd2 !important; /* rojo suave pero claramente rojo */
-  color: #b71c1c; /* rojo oscuro para contraste */
+  background: rgba(229, 57, 53, 0.35) !important;
+  color: #b71c1c;
 }
 
 /* ============================
