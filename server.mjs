@@ -29,23 +29,26 @@ function auth(req, res, next) {
 }
 
 /* ---------- LOGIN ---------- */
-// POST /api/login { usuario, password }
 app.post("/api/login", async (req, res) => {
   const { usuario, password } = req.body;
+
+  console.log("LOGIN REQUEST:", usuario, password);
 
   const { data: user, error } = await supabase
     .from("usuarios")
     .select("*")
-    .eq("usuario", usuario)
-    .eq("password", password)
+    .eq("nombre", usuario)
+    .eq("password_hash", password)
     .single();
+
+  console.log("SUPABASE RESULT:", user, error);
 
   if (error || !user) {
     return res.status(401).json({ error: "Credenciales incorrectas" });
   }
 
   const token = jwt.sign(
-    { id: user.id, usuario: user.usuario, rol: user.rol },
+    { id: user.id, usuario: user.nombre, rol: user.rol },
     JWT_SECRET,
     { expiresIn: "12h" }
   );
@@ -57,26 +60,33 @@ app.post("/api/login", async (req, res) => {
   });
 });
 
+
 /* ---------- CREAR USUARIO ---------- */
-// POST /api/usuarios { usuario, password, rol }
 app.post("/api/usuarios", auth, async (req, res) => {
-  const { usuario, password, rol } = req.body;
+  const { nombre, email, password, rol } = req.body;
 
   try {
     const { data, error } = await supabase
       .from("usuarios")
-      .insert([{ usuario, password, rol }])
+      .insert([{
+        nombre,
+        email,
+        password_hash: password,
+        rol
+      }])
       .select()
       .single();
 
     if (error) throw error;
 
-    res.json(data);
+    res.json({ ok: true, usuario: data });
+
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Error creando usuario" });
   }
 });
+
 
 /* ---------- OBTENER DÍA LITÚRGICO ---------- */
 // GET /api/dia/:fecha
