@@ -439,3 +439,4 @@ window.addEventListener("DOMContentLoaded", () => {
     fechaInput.addEventListener("change", cargarDia);
   }
 });
+
