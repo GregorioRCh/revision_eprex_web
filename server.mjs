@@ -125,11 +125,12 @@ app.get("/api/dia/:fecha", auth, async (req, res) => {
 
       if (errElem) throw errElem;
 
-      respuesta[h.nombre] = elementos.map(e => ({
-        texto: e.texto,
-        estado: e.estado,
-        observaciones: e.observaciones
-      }));
+     respuesta[h.nombre] = elementos.map(e => ({
+  tipo: e.tipo,
+  estado: e.estado,
+  observaciones: e.observaciones
+}));
+
     }
 
     res.json(respuesta);
