@@ -37,7 +37,7 @@ async function login() {
   const res = await fetch(`${API}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ usuario, password, rol })
+    body: JSON.stringify({ usuario, password })
   });
 
   const datos = await res.json();
@@ -59,6 +59,7 @@ async function login() {
     cargarAnios();
   }
 }
+
 
 function logout() {
   localStorage.removeItem("token");
