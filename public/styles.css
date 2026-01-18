@@ -125,15 +125,18 @@ textarea {
    ============================ */
 
 .fila-verde {
-  background: #e8f5e9 !important;
+  background: #c8e6c9 !important; /* verde suave pero visible */
+  color: #1b5e20; /* texto verde oscuro para contraste */
 }
 
 .fila-amarillo {
-  background: #fff8e1 !important;
+  background: #ffecb3 !important; /* amarillo suave pero no pálido */
+  color: #5d4037; /* marrón oscuro para contraste */
 }
 
 .fila-rojo {
-  background: #ffebee !important;
+  background: #ffcdd2 !important; /* rojo suave pero claramente rojo */
+  color: #b71c1c; /* rojo oscuro para contraste */
 }
 
 /* ============================
