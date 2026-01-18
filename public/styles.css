@@ -36,6 +36,11 @@ table tr:nth-child(even) {
 table tr:hover {
   background: #f0f7ff; /* efecto hover suave */
 }
+.fila-verde:hover,
+.fila-amarillo:hover,
+.fila-rojo:hover {
+  background: inherit !important;
+}
 
 /* Celdas */
 table td {
@@ -124,19 +129,20 @@ textarea {
    COLORES DE FILA SEGÚN ESTADO
    ============================ */
 .fila-verde {
-  background: rgba(76, 175, 80, 0.35) !important;
-  color: #1b5e20;
+  background: #4caf50 !important;
+  color: white !important;
 }
 
 .fila-amarillo {
-  background: rgba(255, 202, 40, 0.45) !important;
-  color: #5d4037;
+  background: #ffca28 !important;
+  color: #333 !important;
 }
 
 .fila-rojo {
-  background: rgba(229, 57, 53, 0.35) !important;
-  color: #b71c1c;
+  background: #e53935 !important;
+  color: white !important;
 }
+
 
 /* ============================
    ESTILO PREMIUM PARA TABS
