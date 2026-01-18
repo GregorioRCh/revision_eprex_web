@@ -250,7 +250,7 @@ function mostrarTab(hora) {
 
 async function cambiarEstado(fecha, hora, index, estado) {
   await fetch(`${API}/dia/${fecha}/hora/${hora}/index/${index}/estado`, {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + localStorage.getItem("token")
@@ -266,7 +266,7 @@ async function guardarObs(fecha, hora, index) {
   const observaciones = textarea.value;
 
   await fetch(`${API}/dia/${fecha}/hora/${hora}/index/${index}/observaciones`, {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + localStorage.getItem("token")
