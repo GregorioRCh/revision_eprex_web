@@ -311,6 +311,8 @@ app.get("/api/auditoria", auth, async (req, res) => {
     const { data, error } = await supabase
       .from("auditoria")
       .select("*")
+      .order("fecha_cambio", { ascending: false })
+      .order("hora_cambio", { ascending: false })
       .order("timestamp", { ascending: false });
 
     if (error) throw error;
@@ -322,6 +324,7 @@ app.get("/api/auditoria", auth, async (req, res) => {
     res.status(500).json({ error: "Error cargando auditoría" });
   }
 });
+
 /* ---------- LISTA DE AÑOS ---------- */
 app.get("/api/years", auth, async (req, res) => {
   try {
