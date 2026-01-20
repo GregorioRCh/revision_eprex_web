@@ -80,7 +80,8 @@ async function crearUsuario() {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + localStorage.getItem("token")
     },
-    body: JSON.stringify({ usuario, password, rol })
+    body: JSON.stringify({ usuario, password })
+
   });
 
   const datos = await res.json();
