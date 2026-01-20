@@ -146,19 +146,11 @@ app.get("/api/dia/:fecha", auth, async (req, res) => {
 
 /* ---------- ACTUALIZAR ESTADO ---------- */
 app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res) => {
-
-  // 🔥 PÉGALO AQUÍ MISMO
-  console.log("RUTA ESTADO → ENTRA", {
-    params: req.params,
-    body: req.body,
-    user: req.user
-  });
-
   const { fecha, hora, index } = req.params;
   const { estado } = req.body;
 
   try {
-    // 1. Día
+    // 1. Buscar el día
     const { data: dia, error: errDia } = await supabase
       .from("dias")
       .select("*")
@@ -166,7 +158,7 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res)
       .single();
     if (errDia || !dia) return res.status(404).json({ error: "Fecha no encontrada" });
 
-    // 2. Hora
+    // 2. Buscar la hora litúrgica
     const { data: h, error: errHora } = await supabase
       .from("horas")
       .select("*")
@@ -175,7 +167,7 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res)
       .single();
     if (errHora || !h) return res.status(404).json({ error: "Hora no encontrada" });
 
-    // 3. Elemento
+    // 3. Buscar el elemento litúrgico
     const { data: elem, error: errElem } = await supabase
       .from("elementos")
       .select("*")
@@ -192,27 +184,38 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res)
 
     if (errUpdate) throw errUpdate;
 
-    // 5. Auditoría
+    // 5. AUDITORÍA COMPLETA
     const { data: audData, error: audError } = await supabase
       .from("auditoria")
       .insert([{
-        fecha,
-        hora,
-        indice: Number(index),
+        fecha,                        // día litúrgico
+        hora,                         // hora litúrgica
+        indice: Number(index),        // elemento litúrgico
         campo: "estado",
-        valor: estado,
-        usuario_id: req.user?.id || null,
+
+        valor_antes: elem.estado || "",
+        valor_despues: estado,
+
+        usuario: req.user.usuario,    // nombre del usuario
+        usuario_id: req.user.id,      // id del usuario
+
+        fecha_cambio: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
+        hora_cambio: new Date().toLocaleTimeString("es-ES"),
+
         timestamp: new Date().toISOString()
       }])
       .select();
 
-    console.log("AUDITORIA ESTADO → RESULTADO", { audData, audError });
-
     if (audError) {
-      return res.status(500).json({ error: "Error insertando auditoría estado", detalle: audError.message });
+      console.error("AUDITORIA ESTADO → ERROR", audError);
+      return res.status(500).json({
+        error: "Error insertando auditoría estado",
+        detalle: audError.message
+      });
     }
 
     res.json({ ok: true });
+
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Error actualizando estado" });
@@ -220,15 +223,16 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res)
 });
 
 
+
 /* ---------- ACTUALIZAR OBSERVACIONES ---------- */
 // PUT /api/dia/:fecha/hora/:hora/index/:index/observaciones
 // body: { observaciones }
 app.put("/api/dia/:fecha/hora/:hora/index/:index/observaciones", auth, async (req, res) => {
   const { fecha, hora, index } = req.params;
-  const { observaciones } = req.body;
+  const { observacion } = req.body; // viene del frontend
 
   try {
-    // 1. Día
+    // 1. Buscar el día
     const { data: dia, error: errDia } = await supabase
       .from("dias")
       .select("*")
@@ -236,7 +240,7 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/observaciones", auth, async (re
       .single();
     if (errDia || !dia) return res.status(404).json({ error: "Fecha no encontrada" });
 
-    // 2. Hora
+    // 2. Buscar la hora litúrgica
     const { data: h, error: errHora } = await supabase
       .from("horas")
       .select("*")
@@ -245,7 +249,7 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/observaciones", auth, async (re
       .single();
     if (errHora || !h) return res.status(404).json({ error: "Hora no encontrada" });
 
-    // 3. Elemento
+    // 3. Buscar el elemento litúrgico
     const { data: elem, error: errElem } = await supabase
       .from("elementos")
       .select("*")
@@ -257,28 +261,49 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/observaciones", auth, async (re
     // 4. Actualizar observaciones
     const { error: errUpdate } = await supabase
       .from("elementos")
-      .update({ observaciones })
+      .update({ observaciones: observacion })
       .eq("id", elem.id);
 
     if (errUpdate) throw errUpdate;
 
-    // 5. Auditoría
-    await supabase.from("auditoria").insert([{
-      fecha,
-      hora,
-      indice: Number(index),
-      campo: "observaciones",
-      valor: observaciones,
-      usuario_id: req.user?.id || null,
-      timestamp: new Date().toISOString()
-    }]);
+    // 5. AUDITORÍA COMPLETA
+    const { data: audData, error: audError } = await supabase
+      .from("auditoria")
+      .insert([{
+        fecha,                        // día litúrgico
+        hora,                         // hora litúrgica
+        indice: Number(index),        // elemento litúrgico
+        campo: "observaciones",
+
+        valor_antes: elem.observaciones || "",
+        valor_despues: observacion,
+
+        usuario: req.user.usuario,    // nombre del usuario
+        usuario_id: req.user.id,      // id del usuario
+
+        fecha_cambio: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
+        hora_cambio: new Date().toLocaleTimeString("es-ES"),
+
+        timestamp: new Date().toISOString()
+      }])
+      .select();
+
+    if (audError) {
+      console.error("AUDITORIA OBS → ERROR", audError);
+      return res.status(500).json({
+        error: "Error insertando auditoría observaciones",
+        detalle: audError.message
+      });
+    }
 
     res.json({ ok: true });
+
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Error actualizando observaciones" });
   }
 });
+
 /* ---------- AUDITORÍA ---------- */
 // GET /api/auditoria
 app.get("/api/auditoria", auth, async (req, res) => {
