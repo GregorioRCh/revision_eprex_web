@@ -281,6 +281,25 @@ app.get("/api/auditoria", auth, async (req, res) => {
     res.status(500).json({ error: "Error cargando auditoría" });
   }
 });
+/* ---------- LISTA DE AÑOS ---------- */
+app.get("/api/years", auth, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("dias")
+      .select("fecha");
+
+    if (error) throw error;
+
+    // Extraer años únicos
+    const years = [...new Set(data.map(d => d.fecha.substring(0, 4)))];
+
+    res.json(years);
+
+  } catch (e) {
+    console.error("ERROR YEARS:", e);
+    res.status(500).json({ error: "Error cargando años" });
+  }
+});
 
 /* ---------- ARRANQUE ---------- */
 
