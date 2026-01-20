@@ -252,7 +252,7 @@ function mostrarTab(hora) {
 /* ===================== ESTADO Y OBSERVACIONES ===================== */
 
 async function cambiarEstado(fecha, hora, index, estado) {
-  await fetch(`${API}/api/dia/${fecha}/hora/${hora}/index/${index}/estado`, {
+  await fetch(`${API}/dia/${fecha}/hora/${hora}/index/${index}/estado`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -274,7 +274,7 @@ async function guardarObs(fecha, hora, index) {
   const textarea = document.getElementById(`obs-${hora}-${index}`);
   const observaciones = textarea.value;
 
-  await fetch(`${API}/api/dia/${fecha}/hora/${hora}/index/${index}/observaciones`, {
+  await fetch(`${API}/dia/${fecha}/hora/${hora}/index/${index}/observaciones`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -290,6 +290,7 @@ async function guardarObs(fecha, hora, index) {
 
   alert("Observaciones guardadas");
 }
+
 
 
 
