@@ -390,16 +390,6 @@ function renderInforme(informe) {
 
 /* ===================== AUDITORÍA ===================== */
 
-async function toggleAuditoria() {
-  const panel = document.getElementById("panelAuditoria");
-  if (panel.style.display === "none" || panel.style.display === "") {
-    await cargarAuditoria();
-    panel.style.display = "block";
-  } else {
-    panel.style.display = "none";
-  }
-}
-
 async function cargarAuditoria() {
   try {
     const res = await fetch(`${API}/auditoria`, {
@@ -419,13 +409,17 @@ async function cargarAuditoria() {
       <table class="tabla-auditoria">
         <thead>
           <tr>
-            <th>Timestamp</th>
+            <th>Fecha cambio</th>
+            <th>Hora cambio</th>
+            <th>Usuario</th>
             <th>Usuario ID</th>
-            <th>Campo</th>
-            <th>Fecha</th>
-            <th>Hora</th>
+            <th>Día litúrgico</th>
+            <th>Hora litúrgica</th>
             <th>Índice</th>
-            <th>Valor</th>
+            <th>Campo</th>
+            <th>Antes</th>
+            <th>Después</th>
+            <th>Timestamp</th>
           </tr>
         </thead>
         <tbody>
@@ -434,13 +428,17 @@ async function cargarAuditoria() {
     for (const r of datos) {
       html += `
         <tr>
-          <td>${r.timestamp || ""}</td>
+          <td>${r.fecha_cambio || ""}</td>
+          <td>${r.hora_cambio || ""}</td>
+          <td>${r.usuario || ""}</td>
           <td>${r.usuario_id || ""}</td>
-          <td>${r.campo || ""}</td>
           <td>${r.fecha || ""}</td>
           <td>${r.hora || ""}</td>
           <td>${r.indice ?? ""}</td>
-          <td>${r.valor ?? ""}</td>
+          <td>${r.campo || ""}</td>
+          <td>${r.valor_antes ?? ""}</td>
+          <td>${r.valor_despues ?? ""}</td>
+          <td>${r.timestamp || ""}</td>
         </tr>
       `;
     }
@@ -454,7 +452,6 @@ async function cargarAuditoria() {
     alert("Error cargando auditoría.");
   }
 }
-
 
 /* ===================== INICIO ===================== */
 
