@@ -258,11 +258,17 @@ async function cambiarEstado(fecha, hora, index, estado) {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + localStorage.getItem("token")
     },
-    body: JSON.stringify({ estado })
+    body: JSON.stringify({
+      estado,
+      fecha,
+      hora,
+      index
+    })
   });
 
   cargarDia();
 }
+
 
 async function guardarObs(fecha, hora, index) {
   const textarea = document.getElementById(`obs-${hora}-${index}`);
@@ -274,11 +280,17 @@ async function guardarObs(fecha, hora, index) {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + localStorage.getItem("token")
     },
-    body: JSON.stringify({ observaciones })
+    body: JSON.stringify({
+      observaciones,
+      fecha,
+      hora,
+      index
+    })
   });
 
   alert("Observaciones guardadas");
 }
+
 
 /* ===================== INFORMES ===================== */
 
