@@ -145,11 +145,15 @@ app.get("/api/dia/:fecha", auth, async (req, res) => {
 });
 
 /* ---------- ACTUALIZAR ESTADO ---------- */
-// PUT /api/dia/:fecha/hora/:hora/index/:index/estado
-// body: { estado }
 app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res) => {
 
-// 🔥 PÉGALO AQUÍ MISMO console.log("RUTA ESTADO → ENTRA", { params: req.params, body: req.body, user: req.user });
+  // 🔥 PÉGALO AQUÍ MISMO
+  console.log("RUTA ESTADO → ENTRA", {
+    params: req.params,
+    body: req.body,
+    user: req.user
+  });
+
   const { fecha, hora, index } = req.params;
   const { estado } = req.body;
 
@@ -189,15 +193,24 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res)
     if (errUpdate) throw errUpdate;
 
     // 5. Auditoría
-    await supabase.from("auditoria").insert([{
-      fecha,
-      hora,
-      indice: Number(index),
-      campo: "estado",
-      valor: estado,
-      usuario_id: req.user?.id || null,
-      timestamp: new Date().toISOString()
-    }]);
+    const { data: audData, error: audError } = await supabase
+      .from("auditoria")
+      .insert([{
+        fecha,
+        hora,
+        indice: Number(index),
+        campo: "estado",
+        valor: estado,
+        usuario_id: req.user?.id || null,
+        timestamp: new Date().toISOString()
+      }])
+      .select();
+
+    console.log("AUDITORIA ESTADO → RESULTADO", { audData, audError });
+
+    if (audError) {
+      return res.status(500).json({ error: "Error insertando auditoría estado", detalle: audError.message });
+    }
 
     res.json({ ok: true });
   } catch (e) {
@@ -205,6 +218,7 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res)
     res.status(500).json({ error: "Error actualizando estado" });
   }
 });
+
 
 /* ---------- ACTUALIZAR OBSERVACIONES ---------- */
 // PUT /api/dia/:fecha/hora/:hora/index/:index/observaciones
