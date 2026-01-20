@@ -148,6 +148,8 @@ app.get("/api/dia/:fecha", auth, async (req, res) => {
 // PUT /api/dia/:fecha/hora/:hora/index/:index/estado
 // body: { estado }
 app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res) => {
+
+// 🔥 PÉGALO AQUÍ MISMO console.log("RUTA ESTADO → ENTRA", { params: req.params, body: req.body, user: req.user });
   const { fecha, hora, index } = req.params;
   const { estado } = req.body;
 
