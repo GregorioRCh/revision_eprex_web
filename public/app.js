@@ -272,7 +272,7 @@ async function cambiarEstado(fecha, hora, index, estado) {
 
 async function guardarObs(fecha, hora, index) {
   const textarea = document.getElementById(`obs-${hora}-${index}`);
-  const observaciones = textarea.value;
+  const observacion = textarea.value; // ← nombre correcto
 
   await fetch(`${API}/dia/${fecha}/hora/${hora}/index/${index}/observaciones`, {
     method: "PUT",
@@ -281,7 +281,7 @@ async function guardarObs(fecha, hora, index) {
       "Authorization": "Bearer " + localStorage.getItem("token")
     },
     body: JSON.stringify({
-      observaciones,
+      observacion, // ← nombre correcto
       fecha,
       hora,
       index
