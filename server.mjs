@@ -181,51 +181,43 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/estado", auth, async (req, res)
       .from("elementos")
       .update({ estado })
       .eq("id", elem.id);
-
     if (errUpdate) throw errUpdate;
 
     // 5. AUDITORÍA COMPLETA
-const { data: audData, error: audError } = await supabase
-  .from("auditoria")
-  .insert([{
-    fecha,                         // día litúrgico
-    hora,                          // hora litúrgica
-    indice: Number(index),         // número de elemento
-    campo: "estado",
+    const { error: audError } = await supabase
+      .from("auditoria")
+      .insert([{
+        fecha,
+        hora,
+        indice: Number(index),
+        campo: "estado",
+        elemento: elem.tipo || "",
+        valor_antes: elem.estado || "",
+        valor_despues: estado,
+        usuario: req.user.usuario,
+        usuario_id: req.user.id,
+        fecha_cambio: new Date().toISOString().slice(0, 10),
+        hora_cambio: new Date().toLocaleTimeString("es-ES"),
+        timestamp: new Date().toISOString()
+      }]);
 
-    elemento: elem.tipo || "",     // nombre del elemento litúrgico
+    if (audError) {
+      console.error("AUDITORIA ESTADO → ERROR", audError);
+      return res.status(500).json({ error: "Error insertando auditoría estado" });
+    }
 
-    valor_antes: elem.estado || "",
-    valor_despues: estado,
+    return res.json({ ok: true });
 
-    usuario: req.user.usuario,     // nombre del usuario
-    usuario_id: req.user.id,       // id del usuario
-
-    fecha_cambio: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
-    hora_cambio: new Date().toLocaleTimeString("es-ES"),
-
-    timestamp: new Date().toISOString()
-  }])
-  .select();
-
-if (audError) {
-  console.error("AUDITORIA ESTADO → ERROR", audError);
-  return res.status(500).json({
-    error: "Error insertando auditoría estado",
-    detalle: audError.message
-  });
-}
-
-res.json({ ok: true });
-
-
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: "Error actualizando estado" });
+  }
+});
 
 /* ---------- ACTUALIZAR OBSERVACIONES ---------- */
-// PUT /api/dia/:fecha/hora/:hora/index/:index/observaciones
-// body: { observaciones }
 app.put("/api/dia/:fecha/hora/:hora/index/:index/observaciones", auth, async (req, res) => {
   const { fecha, hora, index } = req.params;
-  const { observacion } = req.body; // viene del frontend
+  const { observacion } = req.body;
 
   try {
     // 1. Buscar el día
@@ -259,43 +251,38 @@ app.put("/api/dia/:fecha/hora/:hora/index/:index/observaciones", auth, async (re
       .from("elementos")
       .update({ observaciones: observacion })
       .eq("id", elem.id);
-
     if (errUpdate) throw errUpdate;
 
-   // 5. AUDITORÍA COMPLETA
-const { data: audData, error: audError } = await supabase
-  .from("auditoria")
-  .insert([{
-    fecha,
-    hora,
-    indice: Number(index),
-    campo: "observaciones",
+    // 5. AUDITORÍA COMPLETA
+    const { error: audError } = await supabase
+      .from("auditoria")
+      .insert([{
+        fecha,
+        hora,
+        indice: Number(index),
+        campo: "observaciones",
+        elemento: elem.tipo || "",
+        valor_antes: elem.observaciones || "",
+        valor_despues: observacion,
+        usuario: req.user.usuario,
+        usuario_id: req.user.id,
+        fecha_cambio: new Date().toISOString().slice(0, 10),
+        hora_cambio: new Date().toLocaleTimeString("es-ES"),
+        timestamp: new Date().toISOString()
+      }]);
 
-    elemento: elem.tipo || "",
+    if (audError) {
+      console.error("AUDITORIA OBS → ERROR", audError);
+      return res.status(500).json({ error: "Error insertando auditoría observaciones" });
+    }
 
-    valor_antes: elem.observaciones || "",
-    valor_despues: observacion,
+    return res.json({ ok: true });
 
-    usuario: req.user.usuario,
-    usuario_id: req.user.id,
-
-    fecha_cambio: new Date().toISOString().slice(0, 10),
-    hora_cambio: new Date().toLocaleTimeString("es-ES"),
-
-    timestamp: new Date().toISOString()
-  }])
-  .select();
-
-if (audError) {
-  console.error("AUDITORIA OBS → ERROR", audError);
-  return res.status(500).json({
-    error: "Error insertando auditoría observaciones",
-    detalle: audError.message
-  });
-}
-
-res.json({ ok: true });
-
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: "Error actualizando observaciones" });
+  }
+});
 
 /* ---------- AUDITORÍA ---------- */
 // GET /api/auditoria
