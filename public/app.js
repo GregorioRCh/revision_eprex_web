@@ -416,6 +416,7 @@ async function cargarAuditoria() {
             <th>Día litúrgico</th>
             <th>Hora litúrgica</th>
             <th>Índice</th>
+            <th>Elemento</th>
             <th>Campo</th>
             <th>Antes</th>
             <th>Después</th>
@@ -435,6 +436,7 @@ async function cargarAuditoria() {
           <td>${r.fecha || ""}</td>
           <td>${r.hora || ""}</td>
           <td>${r.indice ?? ""}</td>
+          <td>${r.elemento || ""}</td>
           <td>${r.campo || ""}</td>
           <td>${r.valor_antes ?? ""}</td>
           <td>${r.valor_despues ?? ""}</td>
@@ -452,6 +454,7 @@ async function cargarAuditoria() {
     alert("Error cargando auditoría.");
   }
 }
+
 
 /* ===================== INICIO ===================== */
 
