@@ -238,6 +238,21 @@ tr.fila-rojo:hover {
 
 
   </style>
+<style>
+  /* Ocultar columnas específicas de la auditoría */
+  .tabla-auditoria th:nth-child(4),
+  .tabla-auditoria td:nth-child(4),  /* Usuario ID */
+
+  .tabla-auditoria th:nth-child(7),
+  .tabla-auditoria td:nth-child(7),  /* Índice */
+
+  .tabla-auditoria th:nth-child(12),
+  .tabla-auditoria td:nth-child(12)  /* Timestamp */
+  {
+    display: none;
+  }
+</style>
+
 </head>
 
 <body>
