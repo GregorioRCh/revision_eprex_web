@@ -390,6 +390,21 @@ function renderInforme(informe) {
 
 /* ===================== AUDITORÍA ===================== */
 
+async function toggleAuditoria() {
+  const panel = document.getElementById("panelAuditoria");
+  if (!panel) {
+    console.error("No se encontró el elemento #panelAuditoria");
+    return;
+  }
+
+  if (panel.style.display === "none" || panel.style.display === "") {
+    await cargarAuditoria();
+    panel.style.display = "block";
+  } else {
+    panel.style.display = "none";
+  }
+}
+
 async function cargarAuditoria() {
   try {
     const res = await fetch(`${API}/auditoria`, {
